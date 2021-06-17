@@ -1,0 +1,36 @@
+<type>: <subject>
+<BLANK LINE>
+<body>
+<BLANK LINE>
+<footer>
+# Example:___________________________________________________________
+# feat: add a custom button
+#     
+# Created a new component to resuse a button 
+# throughout the app. Displays props.text and fades when
+# clicked. 
+#     
+# N/A
+#
+# Please note that:
+#  - The HEADER (first line) is a single line of max. 50 characters
+#    that contains a succinct description of the change.
+#    + <type> describes the kind of change, types are:
+#      * feat (feature, component or screen)
+#      * styl (CSS and design)
+#      * test (testing)
+#      * fixs (maintain)
+#      * docs (documentation)
+#      * rele (release)
+#    + <subject> is a very short description of the change, format:
+#      * imperative, present tense: “change” not “changed”/“changes”
+#      * no capitalised first letter
+#      * no dot (.) at the end
+#  - The BODY should include the motivation for the change and
+#    contrast this with previous behavior and must be phrased in
+#    imperative present tense. Optional to add click up link.
+#  - The FOOTER should contain any information about Breaking
+#    Changes or possibly any effects on existing code. N/A otherwise.
+#
+# To configure this template run:
+#     $git config --local commit.template ./.git-message-template
