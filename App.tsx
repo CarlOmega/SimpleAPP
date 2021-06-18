@@ -1,13 +1,16 @@
 import React from 'react';
 import NavigationController from '@navigation/NavigationController';
 import RootNavigator from '@navigation/RootNavigator';
+import { AuthProvider } from '@states/AuthContext';
 
 const App = () => {
 
   return (
-    <NavigationController>
-      <RootNavigator />
-    </NavigationController>
+    <AuthProvider>
+      <NavigationController>
+        <RootNavigator />
+      </NavigationController>
+    </AuthProvider>
   );
 };
 
