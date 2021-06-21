@@ -1,13 +1,25 @@
 import React from 'react';
 import NavigationController from '@navigation/NavigationController';
-import RootNavigator from '@navigation/RootNavigator';
+import HomeNavigator from '@navigation/HomeNavigator';
+import { AuthProvider, AuthContext } from '@states/AuthContext';
+import AuthNavigator from '@navigation/AuthNavigator';
 
 const App = () => {
 
   return (
-    <NavigationController>
-      <RootNavigator />
-    </NavigationController>
+    <AuthProvider>
+      <NavigationController>
+        <AuthContext.Consumer>
+          {({user}) => 
+            !user 
+            ?
+            <AuthNavigator />
+            :
+            <HomeNavigator />
+          }
+        </AuthContext.Consumer>
+      </NavigationController>
+    </AuthProvider>
   );
 };
 

@@ -23,6 +23,7 @@ module.exports = {
           '@navigation': './src/navigation',
           '@screens': './src/screens',
           '@styles': './src/styles',
+          '@states': './src/states',
           '@utils': './src/utils',
           '@datatypes': './src/datatypes',
           '@config': './src/config'
