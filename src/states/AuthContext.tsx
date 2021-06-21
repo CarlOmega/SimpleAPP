@@ -16,6 +16,8 @@ export const AuthProvider = (props: any) => {
 
   const onAuthStateChanged: FirebaseAuthTypes.AuthListenerCallback = async (user: FirebaseAuthTypes.User | null) => {
     setUser(user);
+    if (user)
+      console.log(await auth().currentUser?.getIdToken(true));
     if (isLoading) setLoading(false);
   }
 

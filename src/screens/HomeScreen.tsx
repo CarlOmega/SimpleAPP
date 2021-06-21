@@ -7,24 +7,19 @@ import { useAuth } from '@states/AuthContext';
 const HomeScreen = ({navigation, route}: any) => {
   const { user, login, logout } = useAuth();
 
-  const onLogin = async () => {
-
-    try {
-      await login("carl.w.humphries@gmail.com", "Test123");
-    } catch (error) {
-      console.log(error.message);
-    }
-  }
-
   const onLogout = async () => {
-    logout();
+    try {
+      await logout();
+    } catch (error) {
+      console.log(error.message)
+    }
   }
 
   return (
     <SafeAreaView style={styles.screen}>
       <Text style={styles.text}>Toptal</Text>
       <Text style={styles.text}>{user?.email ?? "Not logged in"}</Text>
-      <Button title={!user ? "Login" : "Logout"} onPress={!user ? onLogin : onLogout}/>
+      <Button title={"Logout"} onPress={onLogout}/>
       <Icon name="rocket" size={30} color="#900" />
       <Logo width={"100%"} height={"100%"}/>
     </SafeAreaView>
