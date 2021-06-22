@@ -11,26 +11,39 @@ export const AuthProvider = (props: any) => {
 
   useEffect(() => {
     const authSubscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    const tokenSubscriber = auth().onIdTokenChanged(onIdTokenChanged);
     return () => {
       authSubscriber();
+      tokenSubscriber();
     };
   }, []);
 
   const onAuthStateChanged: FirebaseAuthTypes.AuthListenerCallback = async (user: FirebaseAuthTypes.User | null) => {
     setUser(user);
     await reloadClaims();
+    if (user)
+      console.log(await auth().currentUser?.getIdToken());
     if (isLoading) setLoading(false);
   }
 
-  const reloadClaims = async () => {
+  const onIdTokenChanged: FirebaseAuthTypes.AuthListenerCallback = async (user: FirebaseAuthTypes.User | null) => {
     try {
-      const result = await auth().currentUser?.getIdTokenResult(true);
+      const result = await auth().currentUser?.getIdTokenResult();
       if (result)
         setClaims(result.claims);
       else throw new Error("Result empty");
     } catch (error) {
       console.log(error.message);
       setClaims(null);
+    }
+  }
+
+  const reloadClaims = async () => {
+    try {
+      const result = await auth().currentUser?.getIdTokenResult(true);
+      if (!result) throw new Error("Result empty");
+    } catch (error) {
+      console.log(error.message);
     }
   }
 
