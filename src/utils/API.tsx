@@ -1,10 +1,10 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import auth from '@react-native-firebase/auth';
 
-const DEV_URL =  "https://dev.test.com";
-const PRD_URL = 'https://test.com';
+const URL =  "http://localhost:5001/toptal-d15b0/us-central1/app";
 
 const API = axios.create({
-  baseURL: __DEV__ ? DEV_URL : PRD_URL,
+  baseURL: URL,
   responseType: "json",
   headers: {
     'Accept': 'application/json',
@@ -13,7 +13,9 @@ const API = axios.create({
 });
 
 API.interceptors.request.use(async (config: AxiosRequestConfig) => {
-  // Can add adition auth headers here
+  const firebaseUser = auth().currentUser;
+  if (firebaseUser)
+    config.headers['Authorization'] = 'JWT ' + await firebaseUser.getIdToken();
   return config;
 }, (error: AxiosError) => {
   return Promise.reject(error);
@@ -22,7 +24,7 @@ API.interceptors.request.use(async (config: AxiosRequestConfig) => {
 API.interceptors.response.use((response: AxiosResponse) => {
   // Any status code that lie within the range of 2xx cause this function to trigger
   // Do something with response data
-  return response.data;
+  return response;
 }, (error: AxiosError) => {
   if (error.response) {
     // The request was made and the server responded with a status code
@@ -39,23 +41,21 @@ API.interceptors.response.use((response: AxiosResponse) => {
     // Something happened in setting up the request that triggered an Error
     console.log('Error', error.message);
   }
+  return Promise.reject(error);
 });
 
 export default API;
 
-const TEST_ENDPOINT = '/test';
+const USER_ENDPOINT = '/users';
 
 export const UserAPI = {
-  create: (data: any): Promise<AxiosResponse> => {
-    return API.post(TEST_ENDPOINT, data);
-  },
-  read: (): Promise<AxiosResponse> => {
-    return API.get(TEST_ENDPOINT);
+  create: (user: User): Promise<AxiosResponse> => {
+    return API.post(USER_ENDPOINT, {user});
   },
   update: (data: any): Promise<AxiosResponse> => {
-    return API.put(TEST_ENDPOINT, data);
+    return API.put(USER_ENDPOINT, data);
   },
-  delete: (): Promise<AxiosResponse> => {
-    return API.delete(TEST_ENDPOINT);
+  delete: (uid: string): Promise<AxiosResponse> => {
+    return API.delete(USER_ENDPOINT);
   }
 }
