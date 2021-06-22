@@ -47,6 +47,7 @@ API.interceptors.response.use((response: AxiosResponse) => {
 export default API;
 
 const USER_ENDPOINT = '/users';
+const RESTAURANT_ENDPOINT = '/restaurants';
 
 export const UserAPI = {
   create: (user: User): Promise<AxiosResponse> => {
@@ -57,5 +58,20 @@ export const UserAPI = {
   },
   delete: (uid: string): Promise<AxiosResponse> => {
     return API.delete(USER_ENDPOINT);
+  }
+}
+
+export const RestaurantAPI = {
+  create: (restaurant: {name: string, description: string}): Promise<AxiosResponse> => {
+    return API.post(RESTAURANT_ENDPOINT, {restaurant});
+  },
+  read: (): Promise<AxiosResponse>  => {
+    return API.get(RESTAURANT_ENDPOINT);
+  },
+  update: (data: any): Promise<AxiosResponse> => {
+    return API.put(RESTAURANT_ENDPOINT, data);
+  },
+  delete: (uid: string): Promise<AxiosResponse> => {
+    return API.delete(RESTAURANT_ENDPOINT);
   }
 }
