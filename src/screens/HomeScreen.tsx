@@ -38,13 +38,13 @@ const HomeScreen = ({navigation, route}: any) => {
   }
 
   const renderItem = ({ item, index, separators }: any) => {
-    return <Text>{item.name}</Text>
+    return <Button title={item.name} onPress={() => navigation.navigate("Restaurant", {restaurant: item})}/>
   }
 
   return (
     <SafeAreaView style={styles.screen}>
       <Text style={styles.text}>Toptal</Text>
-      {claims.owner && <Button title={"Create"} onPress={() => navigation.navigate("Create")}/>}
+      {claims?.owner && <Button title={"Create"} onPress={() => navigation.navigate("Create")}/>}
       <Button title={"Logout"} onPress={onLogout}/>
       <FlatList
         data={restaurants}
