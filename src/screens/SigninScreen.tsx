@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
-import { SafeAreaView, StyleSheet, Text, Button, TextInput } from 'react-native';
+import { SafeAreaView, StyleSheet } from 'react-native';
 import { useAuth } from '@states/AuthContext';
+import { Layout, Text, Input, Button } from '@ui-kitten/components';
 
 const SigninScreen = ({navigation, route}: any) => {
   const [email, setEmail] = useState("");
@@ -17,24 +18,28 @@ const SigninScreen = ({navigation, route}: any) => {
 
   return (
     <SafeAreaView style={styles.screen}>
-      <Text style={styles.text}>Login</Text>
-      <TextInput
-        style={styles.input}
-        onChangeText={setEmail}
-        value={email}
-        autoCapitalize={"none"}
-        keyboardType={"email-address"}
-        placeholder={"Email..."}
-      />
-      <TextInput
-        style={styles.input}
-        secureTextEntry
-        onChangeText={setPassword}
-        value={password}
-        autoCapitalize={"none"}
-        placeholder={"Password..."}
-      />
-      <Button title={"Login"} onPress={onLogin}/>
+      <Layout style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
+        <Text category={"h1"} style={{marginBottom: 50}}>Login</Text>
+        <Layout style={{width: "90%"}}>
+          <Input
+            style={styles.input}
+            onChangeText={setEmail}
+            value={email}
+            autoCapitalize={"none"}
+            keyboardType={"email-address"}
+            placeholder={"Email..."}
+          />
+          <Input
+            style={styles.input}
+            secureTextEntry
+            onChangeText={setPassword}
+            value={password}
+            autoCapitalize={"none"}
+            placeholder={"Password..."}
+          />
+          <Button style={styles.button} size={"giant"} onPress={onLogin}>Sign in</Button>
+        </Layout>
+      </Layout>
     </SafeAreaView>
   )
 }
@@ -44,9 +49,11 @@ const styles = StyleSheet.create({
     flex: 1
   },
   input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
+    marginVertical: 10,
+  },
+  button: {
+    margin: 5,
+    borderRadius: 30
   },
   text: {
     fontFamily: "Roboto",

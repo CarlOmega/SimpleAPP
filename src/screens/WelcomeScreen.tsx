@@ -8,10 +8,10 @@ const WelcomeScreen = ({navigation, route}: any) => {
     <SafeAreaView style={styles.screen}>
       <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Text category='h1' style={{marginBottom: 100}}>Welcome</Text>
-        <Button style={styles.button} appearance='outline' onPress={() => navigation.navigate("Signup", {type: "owner"})}>
+        <Button style={styles.button} size={"giant"} appearance='outline' onPress={() => navigation.navigate("Signup", {type: "owner"})}>
           Owner Sign up
         </Button>
-        <Button style={styles.button} appearance='outline' onPress={() => navigation.navigate("Signup", {type: "user"})}>
+        <Button style={styles.button} size={"giant"} onPress={() => navigation.navigate("Signup", {type: "user"})}>
           User Sign up
         </Button>
         <Text style={styles.text}>
@@ -28,8 +28,8 @@ const styles = StyleSheet.create({
   },
   button: {
     margin: 5,
-    borderRadius: 15,
-    width: "80%"
+    borderRadius: 30,
+    width: "90%"
   },
   text: {
     fontFamily: "Roboto",

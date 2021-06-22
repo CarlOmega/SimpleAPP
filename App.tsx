@@ -5,27 +5,30 @@ import { AuthProvider, AuthContext } from '@states/AuthContext';
 import AuthNavigator from '@navigation/AuthNavigator';
 import { ActivityIndicator } from 'react-native';
 import * as eva from '@eva-design/eva';
-import { ApplicationProvider } from '@ui-kitten/components';
+import { ApplicationProvider, IconRegistry } from '@ui-kitten/components';
+import { EvaIconsPack } from '@ui-kitten/eva-icons';
 
 const App = () => {
 
   return (
-    <ApplicationProvider {...eva} theme={eva.light}>
-      <AuthProvider>
+    <AuthProvider>
+      <IconRegistry icons={EvaIconsPack} />
+      <ApplicationProvider {...eva} theme={eva.light}>
         <NavigationController>
           <AuthContext.Consumer>
-            {({user, isLoading}) => 
+            {({ user, isLoading }) =>
               isLoading ? <ActivityIndicator /> :
-              !user 
-              ?
-              <AuthNavigator />
-              :
-              <HomeNavigator />
+                !user
+                  ?
+                  <AuthNavigator />
+                  :
+                  <HomeNavigator />
             }
           </AuthContext.Consumer>
         </NavigationController>
-      </AuthProvider>
-    </ApplicationProvider>
+      </ApplicationProvider>
+    </AuthProvider>
+
   );
 };
 
