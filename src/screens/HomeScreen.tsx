@@ -1,12 +1,33 @@
-import React from 'react';
-import { SafeAreaView, StyleSheet, Text, Button } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
-import Logo from '@assets/images/toptal.svg';
+import React, { useState, useCallback } from 'react';
+import { FlatList, SafeAreaView, StyleSheet, Text, Button, RefreshControl } from 'react-native';
 import { useAuth } from '@states/AuthContext';
+import { useEffect } from 'react';
+import { RestaurantAPI } from '@utils/API';
 
 const HomeScreen = ({navigation, route}: any) => {
   const { user, login, logout, claims } = useAuth();
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  const [refreshing, setRefreshing] = React.useState(false);
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    getRestaurants().then(() => setRefreshing(false));
+  }, []);
+
+  
+  const getRestaurants = async () => {
+    try {
+      const res = await RestaurantAPI.read();
+      if (res.data)
+        setRestaurants(res.data);
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  useEffect(() => {
+    getRestaurants();
+  }, [])
 
   const onLogout = async () => {
     try {
@@ -16,14 +37,26 @@ const HomeScreen = ({navigation, route}: any) => {
     }
   }
 
+  const renderItem = ({ item, index, separators }: any) => {
+    return <Button title={item.name} onPress={() => navigation.navigate("Restaurant", {restaurant: item})}/>
+  }
+
   return (
     <SafeAreaView style={styles.screen}>
       <Text style={styles.text}>Toptal</Text>
-      <Text style={styles.text}>{user?.email ?? "Not logged in"}</Text>
-      <Text>{claims ? JSON.stringify(claims, null, 2) : "No claims"}</Text>
+      {claims?.owner && <Button title={"Create"} onPress={() => navigation.navigate("Create")}/>}
       <Button title={"Logout"} onPress={onLogout}/>
-      <Icon name="rocket" size={30} color="#900" />
-      <Logo width={"100%"} height={"100%"}/>
+      <FlatList
+        data={restaurants}
+        keyExtractor={(restaurant: Restaurant) => restaurant.id}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
+        renderItem={renderItem}
+      />
     </SafeAreaView>
   )
 }
