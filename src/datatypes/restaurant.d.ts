@@ -11,8 +11,9 @@ interface Restaurant {
 interface Review {
   id: string,
   author: string,
+  owner: string,
   rating: number,
   comment: string,
   dateOfVisit: number,
-  reply?: string
+  reply: string
 }

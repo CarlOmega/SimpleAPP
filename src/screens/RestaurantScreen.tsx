@@ -34,25 +34,25 @@ const RestaurantScreen = ({ navigation, route }: any) => {
 
   const renderItemHeader = (headerProps: any, item: Review) => (
     <View {...headerProps}>
-      <Layout style={{flexDirection: "row"}}>
-        {[...Array(item.rating).keys()].map(() => 
-          <Icon style={{width: 32, height: 32}} fill={'#121212'} name='star' />
+      <Layout style={{ flexDirection: "row" }}>
+        {[...Array(item.rating).keys()].map(() =>
+          <Icon style={{ width: 32, height: 32 }} fill={'#121212'} name='star' />
         )}
       </Layout>
     </View>
   );
 
   const renderItemFooter = (footerProps: any, item: Review) => (
-  <Layout {...footerProps} style={{ flexDirection: "row", justifyContent: "space-between" }}>
-    <Text style={[styles.text, { flex: 1, padding: 10 }]} >
-      {dayjs.unix(item.dateOfVisit).format("DD/MM/YYYY")}
-    </Text>
-    {claims?.owner && !item.reply &&
-      <Button style={{ flex: 1, padding: 10 }} onPress={() => navigation.navigate("Reply", {restaurant, review: item})}>
-        Reply
-      </Button>
-    }
-  </Layout>
+    <Layout {...footerProps} style={{ flexDirection: "row", justifyContent: "space-between" }}>
+      <Text style={[styles.text, { flex: 1, padding: 10 }]} >
+        {dayjs.unix(item.dateOfVisit).format("DD/MM/YYYY")}
+      </Text>
+      {claims?.owner && item.reply === "" &&
+        <Button style={{ flex: 1, padding: 10 }} onPress={() => navigation.navigate("Reply", { restaurant, review: item })}>
+          Reply
+        </Button>
+      }
+    </Layout>
   );
 
   const renderItem = ({ item, index, separators }: any) => (
@@ -65,11 +65,12 @@ const RestaurantScreen = ({ navigation, route }: any) => {
       <Text>
         {item.comment}
       </Text>
-      <Divider style={{marginVertical: 10}}/>
-      {item.reply && 
-      <Text>
-        {item.reply}
-      </Text>}
+      {item.reply !== "" && <>
+        <Divider style={{ marginVertical: 10 }} />
+        <Text>
+          {item.reply}
+        </Text>
+      </>}
     </Card>
   );
 
@@ -87,7 +88,7 @@ const RestaurantScreen = ({ navigation, route }: any) => {
         {restaurant.ratings == 0 ? "Unrated" : `Avg Rating: ${restaurant.avg}`}
       </Text>
       {claims?.user &&
-        <Button style={{ flex: 1, padding: 10 }} onPress={() => navigation.navigate("Review", {restaurant})}>
+        <Button style={{ flex: 1, padding: 10 }} onPress={() => navigation.navigate("Review", { restaurant })}>
           Review
         </Button>
       }
