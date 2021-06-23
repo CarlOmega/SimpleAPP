@@ -21,7 +21,6 @@ const HomeScreen = ({navigation, route}: any) => {
     try {
       const res = await RestaurantAPI.read(offset);
       if (res.data) {
-        console.log(res.data)
         setRestaurants(prev => offset === 0 ? res.data : [...prev, ...res.data]);
         setOffset(offset + res.data.length);
       }
@@ -32,7 +31,7 @@ const HomeScreen = ({navigation, route}: any) => {
 
   useEffect(() => {
     getRestaurants();
-  }, [])
+  }, []);
 
   const onLogout = async () => {
     try {

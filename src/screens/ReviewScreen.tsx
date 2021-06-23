@@ -44,7 +44,7 @@ const ReviewScreen = ({ navigation, route }: any) => {
         <Text category={"h5"} style={{ marginBottom: 50, marginTop: 20 }}>{restaurant.name}</Text>
         <Formik
           validationSchema={signupValidator}
-          initialValues={{ rating: 3, comment: "", dateOfVisit: dayjs().toDate() }}
+          initialValues={{ rating: 5, comment: "", dateOfVisit: dayjs().toDate() }}
           onSubmit={onReview}
         >{({ handleChange, handleBlur, handleSubmit, setFieldValue, isValid, values, errors, touched }) => (
           <>

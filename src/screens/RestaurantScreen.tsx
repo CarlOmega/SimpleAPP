@@ -1,40 +1,57 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet, View } from 'react-native';
-import { Button, Card, Layout, List, Text } from '@ui-kitten/components';
+import { Button, Card, Layout, List, Text, Icon } from '@ui-kitten/components';
 import { useAuth } from '@states/AuthContext';
+import { ReviewAPI } from '@utils/API';
+import dayjs from 'dayjs';
 
 const RestaurantScreen = ({ navigation, route }: any) => {
   const { claims } = useAuth();
   const [reviews, setReviews] = useState<Restaurant[]>([]);
+  const [offset, setOffset] = useState(0);
   const restaurant: Restaurant = route.params.restaurant;
 
-  const getReviews = async () => {
+  useEffect(() => {
+    getReviews();
+  }, []);
 
+  const getReviews = async () => {
+    try {
+      const res = await ReviewAPI.read(restaurant.id, offset);
+      if (res.data) {
+        setReviews(prev => offset === 0 ? res.data : [...prev, ...res.data]);
+        setOffset(offset + res.data.length);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
   }
 
-  const renderItemHeader = (headerProps: any, item: Restaurant) => (
+  const renderItemHeader = (headerProps: any, item: Review) => (
     <View {...headerProps}>
-      <Text category='h6' numberOfLines={1}>
-        {item.name}
-      </Text>
+      <Layout style={{flexDirection: "row"}}>
+        {[...Array(item.rating).keys()].map(() => 
+          <Icon style={{width: 32, height: 32}} fill={'#121212'} name='star' />
+        )}
+      </Layout>
     </View>
   );
 
-  const renderItemFooter = (footerProps: any, item: Restaurant) => (
+  const renderItemFooter = (footerProps: any, item: Review) => (
     <Text {...footerProps}>
-      {item.ratings == 0 ? "Unrated" : item.avg}
+      {dayjs.unix(item.dateOfVisit).format("DD/MM/YYYY")}
     </Text>
   );
 
   const renderItem = ({ item, index, separators }: any) => (
     <Card
-      onPress={() => navigation.navigate("Restaurant", { restaurant: item })}
+      onPress={() => console.log(item)}
       style={styles.item}
       status='basic'
       header={headerProps => renderItemHeader(headerProps, item)}
       footer={footerProps => renderItemFooter(footerProps, item)}>
-      <Text numberOfLines={4}>
-        {item.description}
+      <Text>
+        {item.comment}
       </Text>
     </Card>
   );
@@ -78,6 +95,8 @@ const RestaurantScreen = ({ navigation, route }: any) => {
           ListHeaderComponent={renderRestaurant}
           contentContainerStyle={styles.contentContainer}
           data={reviews}
+          onEndReached={(info: any) => getReviews()}
+          onEndReachedThreshold={0.2}
           keyExtractor={(restaurant: Restaurant) => restaurant.id}
           renderItem={renderItem}
         />
