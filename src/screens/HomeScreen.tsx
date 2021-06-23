@@ -4,25 +4,26 @@ import { useAuth } from '@states/AuthContext';
 import { useEffect } from 'react';
 import { RestaurantAPI } from '@utils/API';
 import { Card, Text, List } from '@ui-kitten/components';
+import { useRef } from 'react';
 
 const HomeScreen = ({navigation, route}: any) => {
   const { user, login, logout, claims } = useAuth();
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [offset, setOffset] = useState(0);
+  const offset = useRef(0);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    setOffset(0);
+    offset.current = 0;
     getRestaurants().then(() => setRefreshing(false));
   }, []);
 
   const getRestaurants = async () => {
     try {
-      const res = await RestaurantAPI.read(offset);
+      const res = await RestaurantAPI.read(offset.current);
       if (res.data) {
-        setRestaurants(prev => offset === 0 ? res.data : [...prev, ...res.data]);
-        setOffset(offset + res.data.length);
+        setRestaurants(prev => offset.current === 0 ? res.data : [...prev, ...res.data]);
+        offset.current += res.data.length;
       }
     } catch (error) {
       console.log(error.message);
@@ -30,8 +31,13 @@ const HomeScreen = ({navigation, route}: any) => {
   }
 
   useEffect(() => {
-    getRestaurants();
-  }, []);
+    const unsubscribe = navigation.addListener('focus', () => {
+      offset.current = 0;
+      getRestaurants()
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   const onLogout = async () => {
     try {

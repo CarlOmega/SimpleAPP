@@ -6,6 +6,7 @@ import HomeScreen from '@screens/HomeScreen';
 import CreateScreen from '@screens/CreateScreen';
 import RestaurantScreen from '@screens/RestaurantScreen';
 import ReviewScreen from '@screens/ReviewScreen';
+import ReplyScreen from '@screens/ReplyScreen';
 
 const HomeStack = createStackNavigator();
 
@@ -16,6 +17,7 @@ const HomeNavigator = () => {
       <HomeStack.Screen name="Create" component={CreateScreen} />
       <HomeStack.Screen name="Restaurant" component={RestaurantScreen} />
       <HomeStack.Screen name="Review" component={ReviewScreen} />
+      <HomeStack.Screen name="Reply" component={ReplyScreen} />
     </HomeStack.Navigator>
   );
 };

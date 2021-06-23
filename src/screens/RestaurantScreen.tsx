@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { SafeAreaView, StyleSheet, View } from 'react-native';
-import { Button, Card, Layout, List, Text, Icon } from '@ui-kitten/components';
+import { Button, Card, Layout, List, Text, Icon, Divider } from '@ui-kitten/components';
 import { useAuth } from '@states/AuthContext';
 import { ReviewAPI } from '@utils/API';
 import dayjs from 'dayjs';
@@ -8,19 +8,24 @@ import dayjs from 'dayjs';
 const RestaurantScreen = ({ navigation, route }: any) => {
   const { claims } = useAuth();
   const [reviews, setReviews] = useState<Restaurant[]>([]);
-  const [offset, setOffset] = useState(0);
+  const offset = useRef(0);
   const restaurant: Restaurant = route.params.restaurant;
 
   useEffect(() => {
-    getReviews();
-  }, []);
+    const unsubscribe = navigation.addListener('focus', () => {
+      offset.current = 0;
+      getReviews()
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   const getReviews = async () => {
     try {
-      const res = await ReviewAPI.read(restaurant.id, offset);
+      const res = await ReviewAPI.read(restaurant.id, offset.current);
       if (res.data) {
-        setReviews(prev => offset === 0 ? res.data : [...prev, ...res.data]);
-        setOffset(offset + res.data.length);
+        setReviews(prev => offset.current === 0 ? res.data : [...prev, ...res.data]);
+        offset.current += res.data.length;
       }
     } catch (error) {
       console.log(error.message);
@@ -38,9 +43,16 @@ const RestaurantScreen = ({ navigation, route }: any) => {
   );
 
   const renderItemFooter = (footerProps: any, item: Review) => (
-    <Text {...footerProps}>
+  <Layout {...footerProps} style={{ flexDirection: "row", justifyContent: "space-between" }}>
+    <Text style={[styles.text, { flex: 1, padding: 10 }]} >
       {dayjs.unix(item.dateOfVisit).format("DD/MM/YYYY")}
     </Text>
+    {claims?.owner && !item.reply &&
+      <Button style={{ flex: 1, padding: 10 }} onPress={() => navigation.navigate("Reply", {restaurant, review: item})}>
+        Reply
+      </Button>
+    }
+  </Layout>
   );
 
   const renderItem = ({ item, index, separators }: any) => (
@@ -53,6 +65,11 @@ const RestaurantScreen = ({ navigation, route }: any) => {
       <Text>
         {item.comment}
       </Text>
+      <Divider style={{marginVertical: 10}}/>
+      {item.reply && 
+      <Text>
+        {item.reply}
+      </Text>}
     </Card>
   );
 
