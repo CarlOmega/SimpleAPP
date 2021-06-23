@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, Button, TextInput } from 'react-native';
+import { SafeAreaView, StyleSheet } from 'react-native';
 import { useAuth } from '@states/AuthContext';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { RestaurantAPI } from '@utils/API';
+import { Layout, Text, Input, Button } from '@ui-kitten/components';
 
 const signupValidator = yup.object().shape({
   name: yup
@@ -28,39 +29,44 @@ const CreateScreen = ({ navigation, route }: any) => {
     }
   }
 
+  const renderCaption = (caption: string | undefined) => (
+    <Text status={"danger"} style={styles.captionText}>{caption ?? ""}</Text>
+  );
+
   return (
     <SafeAreaView style={styles.screen}>
-      <Text style={styles.text}>Create Restaurant</Text>
-      <Formik
-        validationSchema={signupValidator}
-        initialValues={{ name: "", description: "" }}
-        onSubmit={onCreate}
-      >{({ handleChange, handleBlur, handleSubmit, isValid, values, errors, touched }) => (
-        <>
-          {(errors.name && touched.name) &&
-            <Text style={{ fontSize: 10, color: 'red' }}>{errors.name}</Text>
-          }
-          <TextInput
-            style={styles.input}
-            onChangeText={handleChange('name')}
-            onBlur={handleBlur('name')}
-            value={values.name}
-            placeholder={"Restaurant Name..."}
-          />
-          {(errors.description && touched.description) &&
-            <Text style={{ fontSize: 10, color: 'red' }}>{errors.description}</Text>
-          }
-          <TextInput
-            style={styles.input}
-            onChangeText={handleChange('description')}
-            onBlur={handleBlur('description')}
-            multiline
-            value={values.description}
-            placeholder={"Description..."}
-          />
-          <Button title={"Create Restaurant"} disabled={!isValid} onPress={handleSubmit} />
-        </>
-      )}</Formik>
+      <Layout style={{ flex: 1, alignItems: "center" }}>
+        <Text category={"h1"} style={{ marginBottom: 50 }}>Create Restaurant</Text>
+        <Formik
+          validationSchema={signupValidator}
+          initialValues={{ name: "", description: "" }}
+          onSubmit={onCreate}
+        >{({ handleChange, handleBlur, handleSubmit, isValid, values, errors, touched }) => (
+          <>
+            <Input
+              caption={() => renderCaption(touched.name ? errors.name : "")}
+              style={styles.input}
+              onChangeText={handleChange('name')}
+              onBlur={handleBlur('name')}
+              value={values.name}
+              placeholder={"Restaurant Name..."}
+            />
+            <Input
+              textStyle={{ minHeight: 64 }}
+              caption={() => renderCaption(touched.description ? errors.description : "")}
+              style={styles.input}
+              onChangeText={handleChange('description')}
+              onBlur={handleBlur('description')}
+              multiline
+              value={values.description}
+              placeholder={"Description..."}
+            />
+            <Button style={styles.button} size={"giant"} disabled={!isValid} onPress={handleSubmit} >
+              Create
+            </Button>
+          </>
+        )}</Formik>
+      </Layout>
     </SafeAreaView>
   )
 }
@@ -73,6 +79,15 @@ const styles = StyleSheet.create({
     height: 40,
     margin: 12,
     borderWidth: 1,
+  },
+  captionText: {
+    fontFamily: "Roboto",
+    fontSize: 13
+  },
+  button: {
+    width: "80%",
+    borderRadius: 30,
+    margin: 50,
   },
   text: {
     fontFamily: "Roboto",

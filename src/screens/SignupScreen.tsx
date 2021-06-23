@@ -114,11 +114,6 @@ const styles = StyleSheet.create({
   captionContainer: {
     alignItems: 'center',
   },
-  captionIcon: {
-    width: 10,
-    height: 10,
-    marginRight: 5
-  },
   captionText: {
     fontFamily: "Roboto",
     fontSize: 13
