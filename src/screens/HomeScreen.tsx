@@ -9,20 +9,20 @@ const HomeScreen = ({navigation, route}: any) => {
   const { user, login, logout, claims } = useAuth();
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [page, setPage] = useState(0);
+  const [offset, setOffset] = useState(0);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    setPage(0);
+    setOffset(0);
     getRestaurants().then(() => setRefreshing(false));
   }, []);
 
   const getRestaurants = async () => {
     try {
-      const res = await RestaurantAPI.read(page);
+      const res = await RestaurantAPI.read(offset);
       if (res.data) {
-        setRestaurants(prev => page === 0 ? res.data : [...prev, ...res.data]);
-        setPage(page + (res.data.length === 0 ? 0 : 1));
+        setRestaurants(prev => offset === 0 ? res.data : [...prev, ...res.data]);
+        setOffset(offset + res.data.length);
       }
     } catch (error) {
       console.log(error.message);
