@@ -62,7 +62,7 @@ const HomeScreen = ({navigation, route}: any) => {
       status='basic'
       header={headerProps => renderItemHeader(headerProps, item)}
       footer={footerProps => renderItemFooter(footerProps, item)}>
-      <Text numberOfLines={4}>
+      <Text numberOfLines={4} style={{fontFamily: "Roboto", minHeight: 50}}>
         {item.description}
       </Text>
     </Card>
