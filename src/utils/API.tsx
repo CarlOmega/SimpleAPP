@@ -48,6 +48,7 @@ export default API;
 
 const USER_ENDPOINT = '/users';
 const RESTAURANT_ENDPOINT = '/restaurants';
+const REVIEW_ENDPOINT = '/reviews';
 
 export const UserAPI = {
   create: (user: User): Promise<AxiosResponse> => {
@@ -71,7 +72,22 @@ export const RestaurantAPI = {
   update: (data: any): Promise<AxiosResponse> => {
     return API.put(RESTAURANT_ENDPOINT, data);
   },
-  delete: (uid: string): Promise<AxiosResponse> => {
-    return API.delete(RESTAURANT_ENDPOINT);
+  delete: (restaurantId: string): Promise<AxiosResponse> => {
+    return API.delete(RESTAURANT_ENDPOINT + `/${restaurantId}`);
+  }
+}
+
+export const ReviewAPI = {
+  create: (restaurantId: string, review: {rating: number, comment: string, dateOfVisit: number}): Promise<AxiosResponse> => {
+    return API.post(REVIEW_ENDPOINT + `/${restaurantId}`, {review});
+  },
+  read: (restaurantId: string): Promise<AxiosResponse>  => {
+    return API.get(REVIEW_ENDPOINT + `/${restaurantId}`);
+  },
+  update: (restaurantId: string, data: any): Promise<AxiosResponse> => {
+    return API.put(REVIEW_ENDPOINT + `/${restaurantId}`, data);
+  },
+  delete: (restaurantId: string, reviewId: string): Promise<AxiosResponse> => {
+    return API.delete(REVIEW_ENDPOINT + `/${restaurantId}/${reviewId}`);
   }
 }

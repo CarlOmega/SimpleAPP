@@ -22,13 +22,13 @@ const RestaurantScreen = ({ navigation, route }: any) => {
 
   const renderItemFooter = (footerProps: any, item: Restaurant) => (
     <Text {...footerProps}>
-      {item.rating == 0 ? "Unrated" : item.rating}
+      {item.ratings == 0 ? "Unrated" : item.avg}
     </Text>
   );
 
   const renderItem = ({ item, index, separators }: any) => (
     <Card
-      onPress={() => navigation.navigate("Restaurant", {restaurant: item})}
+      onPress={() => navigation.navigate("Restaurant", { restaurant: item })}
       style={styles.item}
       status='basic'
       header={headerProps => renderItemHeader(headerProps, item)}
@@ -48,18 +48,20 @@ const RestaurantScreen = ({ navigation, route }: any) => {
   );
 
   const renderFooter = (footerProps: any) => (
-    <Layout {...footerProps} style={{flexDirection: "row", justifyContent: "space-between"}}>
-      <Text style={[styles.text, {flex: 1, padding: 10}]} >
-        {restaurant.rating == 0 ? "Unrated" : `Avg Rating: ${restaurant.rating}`}
+    <Layout {...footerProps} style={{ flexDirection: "row", justifyContent: "space-between" }}>
+      <Text style={[styles.text, { flex: 1, padding: 10 }]} >
+        {restaurant.ratings == 0 ? "Unrated" : `Avg Rating: ${restaurant.avg}`}
       </Text>
-      {claims?.user ?<Button style={{flex:1, padding: 10}}>
-        Review
-      </Button> : null}
+      {claims?.user &&
+        <Button style={{ flex: 1, padding: 10 }} onPress={() => navigation.navigate("Review", {restaurant})}>
+          Review
+        </Button>
+      }
     </Layout>
   );
 
   const renderRestaurant = (props: any) => (
-    <Card 
+    <Card
       style={styles.restaurantContainer}
       status='basic'
       header={renderHeader}

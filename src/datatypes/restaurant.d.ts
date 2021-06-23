@@ -3,5 +3,15 @@ interface Restaurant {
   owner: string,
   name: string,
   description: string,
-  rating: number
+  total: number,
+  ratings: number,
+  avg: number
+}
+
+interface Review {
+  id: string,
+  author: string,
+  rating: number,
+  comment: string,
+  reply?: string
 }
