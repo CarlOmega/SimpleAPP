@@ -3,7 +3,7 @@ import NavigationController from '@navigation/NavigationController';
 import HomeNavigator from '@navigation/HomeNavigator';
 import { AuthProvider, AuthContext } from '@states/AuthContext';
 import AuthNavigator from '@navigation/AuthNavigator';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, StatusBar } from 'react-native';
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, IconRegistry } from '@ui-kitten/components';
 import { EvaIconsPack } from '@ui-kitten/eva-icons';

@@ -65,8 +65,8 @@ export const RestaurantAPI = {
   create: (restaurant: {name: string, description: string}): Promise<AxiosResponse> => {
     return API.post(RESTAURANT_ENDPOINT, {restaurant});
   },
-  read: (): Promise<AxiosResponse>  => {
-    return API.get(RESTAURANT_ENDPOINT);
+  read: (page: number): Promise<AxiosResponse>  => {
+    return API.get(RESTAURANT_ENDPOINT, {params: {page}});
   },
   update: (data: any): Promise<AxiosResponse> => {
     return API.put(RESTAURANT_ENDPOINT, data);
