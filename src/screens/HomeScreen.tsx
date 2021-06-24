@@ -97,7 +97,7 @@ const HomeScreen = ({ navigation, route }: any) => {
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        claims?.owner &&
+        claims?.owner ?
         <Layout style={{ paddingRight: 10, paddingTop: 5 }}>
           {pending.length != 0 && <Layout style={styles.badge}>
             <Text style={{textAlign: "center", fontWeight: "bold", fontSize: 10, color: "white"}}>{pending.length}</Text>
@@ -108,7 +108,16 @@ const HomeScreen = ({ navigation, route }: any) => {
             fill='#121212'
             name='alert-circle-outline'
           />
-        </Layout>
+        </Layout> :
+        (claims?.admin && 
+        <Layout style={{ paddingRight: 10, paddingTop: 5 }}>
+          <Icon
+            onPress={() => navigation.navigate("Users")}
+            style={{ width: 40, height: 40 }}
+            fill='#121212'
+            name='people-outline'
+          />
+        </Layout>)
       ),
       headerLeft: () => (
         <NativeButton onPress={onLogout} title="Logout" />

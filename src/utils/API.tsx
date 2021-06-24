@@ -54,6 +54,9 @@ export const UserAPI = {
   create: (user: User): Promise<AxiosResponse> => {
     return API.post(USER_ENDPOINT, {user});
   },
+  read: (): Promise<AxiosResponse>  => {
+    return API.get(USER_ENDPOINT);
+  },
   update: (data: any): Promise<AxiosResponse> => {
     return API.put(USER_ENDPOINT, data);
   },
