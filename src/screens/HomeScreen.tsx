@@ -11,13 +11,14 @@ const HomeScreen = ({ navigation, route }: any) => {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [pending, setPending] = useState<Review[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [ratingFilter, setRatingFilter] = useState(0);
   const offset = useRef(0);
   const isMounted = useRef(true);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     offset.current = 0;
-    getPending();
+    if (claims?.owner) getPending();
     getRestaurants().then(() => setRefreshing(false));
   }, []);
 
@@ -115,13 +116,28 @@ const HomeScreen = ({ navigation, route }: any) => {
     });
   }, [navigation, claims, pending]);
 
+  const renderHeader = () => (
+    <>
+    <Layout style={{flexDirection: "row", alignItems: "center"}}>
+      <Text category={"h5"}>Filter:</Text>
+      <Icon style={{width: 32, height: 32}} fill={ratingFilter >= 1 ? '#121212' : '#8F9BB3'} name='close-circle-outline' onPress={() => setRatingFilter(0)}/>
+      <Icon style={{width: 32, height: 32}} fill={ratingFilter >= 1 ? '#121212' : '#8F9BB3'} name='star' onPress={() => setRatingFilter(1)}/>
+      <Icon style={{width: 32, height: 32}} fill={ratingFilter >= 2 ? '#121212' : '#8F9BB3'} name='star' onPress={() => setRatingFilter(2)}/>
+      <Icon style={{width: 32, height: 32}} fill={ratingFilter >= 3 ? '#121212' : '#8F9BB3'} name='star' onPress={() => setRatingFilter(3)}/>
+      <Icon style={{width: 32, height: 32}} fill={ratingFilter >= 4 ? '#121212' : '#8F9BB3'} name='star' onPress={() => setRatingFilter(4)}/>
+      <Icon style={{width: 32, height: 32}} fill={ratingFilter >= 5 ? '#121212' : '#8F9BB3'} name='star' onPress={() => setRatingFilter(5)}/>
+    </Layout>
+    {claims?.owner ? <Button style={{ borderRadius: 20, marginVertical: 10 }} onPress={() => navigation.navigate("Create")}>Add New Restaurant</Button> : null}
+    </>
+  )
+
   return (
     <SafeAreaView style={styles.screen}>
       <List
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
-        data={restaurants}
-        ListHeaderComponent={claims?.owner ? <Button style={{ borderRadius: 20, marginVertical: 10 }} onPress={() => navigation.navigate("Create")}>Add New Restaurant</Button> : null}
+        data={restaurants.filter((restaurant: Restaurant) => restaurant.avg >= ratingFilter)}
+        ListHeaderComponent={renderHeader}
         onEndReached={(info: any) => getRestaurants()}
         onEndReachedThreshold={0.2}
         keyExtractor={(restaurant: Restaurant) => restaurant.id}
