@@ -90,6 +90,9 @@ export const ReviewAPI = {
   delete: (restaurantId: string, reviewId: string): Promise<AxiosResponse> => {
     return API.delete(REVIEW_ENDPOINT + `/${restaurantId}/${reviewId}`);
   },
+  preview: (restaurantId: string): Promise<AxiosResponse>  => {
+    return API.get(REVIEW_ENDPOINT + `/${restaurantId}/preview`);
+  },
   pending: (): Promise<AxiosResponse> => {
     return API.get(REVIEW_ENDPOINT + `/pending`);
   }

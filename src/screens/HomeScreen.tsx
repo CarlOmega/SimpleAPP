@@ -12,6 +12,7 @@ const HomeScreen = ({ navigation, route }: any) => {
   const [pending, setPending] = useState<Review[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const offset = useRef(0);
+  const isMounted = useRef(true);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -23,7 +24,7 @@ const HomeScreen = ({ navigation, route }: any) => {
   const getRestaurants = async () => {
     try {
       const res = await RestaurantAPI.read(offset.current);
-      if (res.data) {
+      if (res.data && isMounted.current) {
         setRestaurants(prev => offset.current === 0 ? res.data : [...prev, ...res.data]);
         offset.current += res.data.length;
       }
@@ -35,7 +36,7 @@ const HomeScreen = ({ navigation, route }: any) => {
   const getPending = async () => {
     try {
       const res = await ReviewAPI.pending();
-      if (res.data) {
+      if (res.data && isMounted.current) {
         setPending(res.data);
       }
     } catch (error) {
@@ -50,7 +51,10 @@ const HomeScreen = ({ navigation, route }: any) => {
       getPending();
     });
 
-    return unsubscribe;
+    return () => {
+      isMounted.current = false;
+      unsubscribe();
+    }
   }, [navigation]);
 
   const onLogout = async () => {
@@ -71,7 +75,7 @@ const HomeScreen = ({ navigation, route }: any) => {
 
   const renderItemFooter = (footerProps: any, item: Restaurant) => (
     <Text {...footerProps}>
-      {item.ratings == 0 ? "Unrated" : item.avg}
+      {item.ratings == 0 ? "Unrated" : item.avg.toFixed(2)}
     </Text>
   );
 

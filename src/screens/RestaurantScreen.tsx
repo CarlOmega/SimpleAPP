@@ -8,7 +8,9 @@ import dayjs from 'dayjs';
 const RestaurantScreen = ({ navigation, route }: any) => {
   const { claims } = useAuth();
   const [reviews, setReviews] = useState<Restaurant[]>([]);
+  const [preview, setPreview] = useState<any>(null)
   const offset = useRef(0);
+  const isMounted = useRef(true);
   const restaurant: Restaurant = route.params.restaurant;
 
   useEffect(() => {
@@ -17,15 +19,23 @@ const RestaurantScreen = ({ navigation, route }: any) => {
       getReviews()
     });
 
-    return unsubscribe;
+    return () => {
+      isMounted.current = false;
+      unsubscribe();
+    }
   }, [navigation]);
 
   const getReviews = async () => {
     try {
       const res = await ReviewAPI.read(restaurant.id, offset.current);
-      if (res.data) {
+      if (res.data && isMounted.current) {
         setReviews(prev => offset.current === 0 ? res.data : [...prev, ...res.data]);
         offset.current += res.data.length;
+      }
+      const {data: preview} = await ReviewAPI.preview(restaurant.id);
+      if (preview && isMounted.current) {
+        console.log(preview)
+        setPreview(preview);
       }
     } catch (error) {
       console.log(error.message);
@@ -35,8 +45,8 @@ const RestaurantScreen = ({ navigation, route }: any) => {
   const renderItemHeader = (headerProps: any, item: Review) => (
     <View {...headerProps}>
       <Layout style={{ flexDirection: "row" }}>
-        {[...Array(item.rating).keys()].map(() =>
-          <Icon style={{ width: 32, height: 32 }} fill={'#121212'} name='star' />
+        {[...Array(item.rating).keys()].map((index: number) =>
+          <Icon key={index} style={{ width: 32, height: 32 }} fill={'#121212'} name='star' />
         )}
       </Layout>
     </View>
@@ -85,7 +95,7 @@ const RestaurantScreen = ({ navigation, route }: any) => {
   const renderFooter = (footerProps: any) => (
     <Layout {...footerProps} style={{ flexDirection: "row", justifyContent: "space-between" }}>
       <Text style={[styles.text, { flex: 1, padding: 10 }]} >
-        {restaurant.ratings == 0 ? "Unrated" : `Avg Rating: ${restaurant.avg}`}
+        {restaurant.ratings == 0 ? "Unrated" : `Avg Rating: ${restaurant.avg.toFixed(2)}`}
       </Text>
       {claims?.user &&
         <Button style={{ flex: 1, padding: 10 }} onPress={() => navigation.navigate("Review", { restaurant })}>
@@ -101,7 +111,29 @@ const RestaurantScreen = ({ navigation, route }: any) => {
       status='basic'
       header={renderHeader}
       footer={renderFooter}>
-      <Text style={styles.text}>{restaurant.description}</Text>
+      <Text style={[styles.text, {padding: 10, marginBottom: 10}]}>{restaurant.description}</Text>
+      {preview && <>
+        <Divider />
+        <Text style={styles.text}>Highest Rating:</Text>
+        <Layout style={{flexDirection: "row", height: 30, justifyContent: "center" }}>
+          <Layout style={{ flex: 1, flexDirection: "row" }}>
+            {[...Array(preview.top?.rating).keys()].map((index: number) =>
+              <Icon key={index} style={{ width: 15, height: 15 }} fill={'#121212'} name='star' />
+            )}
+          </Layout>
+          <Text style={[styles.text, {flex: 7}]}>{preview.top?.comment}</Text>
+        </Layout>
+        <Divider />
+        <Text style={styles.text}>Lowest Rating:</Text>
+        <Layout style={{flexDirection: "row", height: 30, justifyContent: "center" }}>
+          <Layout style={{ flex: 1, flexDirection: "row" }}>
+            {[...Array(preview.bottom?.rating).keys()].map((index: number) =>
+              <Icon key={index} style={{ width: 15, height: 15 }} fill={'#121212'} name='star' />
+            )}
+          </Layout>
+          <Text style={[styles.text, {flex: 7}]}>{preview.bottom?.comment}</Text>
+        </Layout>
+      </>}
     </Card>
   );
 
