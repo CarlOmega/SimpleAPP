@@ -6,13 +6,21 @@ import dayjs from 'dayjs';
 
 const PendingScreen = ({ navigation, route }: any) => {
   const { claims } = useAuth();
-  const reviews = route.params.pending;
+  let reviews = route.params.pending;
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      reviews = [...reviews]
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   const renderItemHeader = (headerProps: any, item: Review) => (
     <View {...headerProps}>
       <Layout style={{ flexDirection: "row" }}>
-        {[...Array(item.rating).keys()].map(() =>
-          <Icon style={{ width: 32, height: 32 }} fill={'#121212'} name='star' />
+        {[...Array(item.rating).keys()].map((index: number) =>
+          <Icon key={index} style={{ width: 32, height: 32 }} fill={'#121212'} name='star' />
         )}
       </Layout>
     </View>
@@ -59,7 +67,7 @@ const PendingScreen = ({ navigation, route }: any) => {
           style={styles.container}
           contentContainerStyle={styles.contentContainer}
           data={reviews}
-          keyExtractor={(restaurant: Restaurant) => restaurant.id}
+          keyExtractor={(review: Review) => review.id}
           renderItem={renderItem}
         />
       </Layout>

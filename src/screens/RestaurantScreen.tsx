@@ -121,17 +121,17 @@ const RestaurantScreen = ({ navigation, route }: any) => {
               <Icon key={index} style={{ width: 15, height: 15 }} fill={'#121212'} name='star' />
             )}
           </Layout>
-          <Text style={[styles.text, {flex: 7}]}>{preview.top?.comment}</Text>
+          <Text style={[styles.text, {flex: 3}]}>{preview.top?.comment}</Text>
         </Layout>
         <Divider />
         <Text style={styles.text}>Lowest Rating:</Text>
-        <Layout style={{flexDirection: "row", height: 30, justifyContent: "center" }}>
+        <Layout style={{ flexDirection: "row", height: 30, justifyContent: "center" }}>
           <Layout style={{ flex: 1, flexDirection: "row" }}>
             {[...Array(preview.bottom?.rating).keys()].map((index: number) =>
               <Icon key={index} style={{ width: 15, height: 15 }} fill={'#121212'} name='star' />
             )}
           </Layout>
-          <Text style={[styles.text, {flex: 7}]}>{preview.bottom?.comment}</Text>
+          <Text style={[styles.text, {flex: 3}]} numberOfLines={1}>{preview.bottom?.comment}</Text>
         </Layout>
       </>}
     </Card>

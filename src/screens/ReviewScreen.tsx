@@ -16,6 +16,7 @@ const signupValidator = yup.object().shape({
     .required('Rating is Required'),
   comment: yup
     .string()
+    .max(120)
     .required('Comment is Required'),
   dateOfVisit: yup
     .date()

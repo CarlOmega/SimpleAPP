@@ -9,6 +9,7 @@ import { ScrollView } from 'react-native';
 const signupValidator = yup.object().shape({
   reply: yup
     .string()
+    .max(120)
     .required('Comment is Required'),
 })
 
