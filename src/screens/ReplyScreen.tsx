@@ -3,9 +3,7 @@ import { SafeAreaView, StyleSheet } from 'react-native';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { ReviewAPI } from '@utils/API';
-import { Layout, Text, Input, Button, ButtonGroup, Icon } from '@ui-kitten/components';
-import dayjs from 'dayjs';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { Layout, Text, Input, Button, Divider } from '@ui-kitten/components';
 import { ScrollView } from 'react-native';
 
 const signupValidator = yup.object().shape({
@@ -15,13 +13,12 @@ const signupValidator = yup.object().shape({
 })
 
 const ReplyScreen = ({ navigation, route }: any) => {
-  const restaurant: Restaurant = route.params.restaurant;
   const review: Review = route.params.review;
 
   const onReply = async (values: any) => {    
     try {
       review.reply = values.reply;
-      await ReviewAPI.update(restaurant.id, review.id, values.reply);
+      await ReviewAPI.update(review.restaurantId, review.id, values.reply);
       navigation.goBack();
     } catch (error) {
       console.log(error.message);
@@ -35,10 +32,12 @@ const ReplyScreen = ({ navigation, route }: any) => {
   return (
     <SafeAreaView style={styles.screen}>
       <Layout style={{ flex: 1, alignItems: "center" }}>
-        <Text category={"h5"} style={{ marginBottom: 50, marginTop: 20 }}>{restaurant.name}</Text>
+        <Text category={"h5"} style={{ marginBottom: 50, marginTop: 20 }}>Comment Details</Text>
+        <Divider />
         <Text category={"s1"} >{"Rating: " + review.rating}</Text>
-        <ScrollView style={{maxHeight: 100}}>
-          <Text style={{ margin: 10}} >{review.comment}</Text>
+        <Divider />
+        <ScrollView style={{maxHeight: 100, width: "100%", backgroundColor: "#fefefe"}}>
+          <Text style={{ margin: 10 }} >{review.comment}</Text>
         </ScrollView>
         <Formik
           validationSchema={signupValidator}

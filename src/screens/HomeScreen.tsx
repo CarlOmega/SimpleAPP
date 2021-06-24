@@ -1,20 +1,22 @@
 import React, { useState, useCallback } from 'react';
-import { SafeAreaView, StyleSheet, Button, RefreshControl, View } from 'react-native';
+import { SafeAreaView, StyleSheet, RefreshControl, View, Button as NativeButton } from 'react-native';
 import { useAuth } from '@states/AuthContext';
 import { useEffect } from 'react';
-import { RestaurantAPI } from '@utils/API';
-import { Card, Text, List } from '@ui-kitten/components';
+import { RestaurantAPI, ReviewAPI } from '@utils/API';
+import { Card, Text, List, Button, Icon, Layout } from '@ui-kitten/components';
 import { useRef } from 'react';
 
-const HomeScreen = ({navigation, route}: any) => {
+const HomeScreen = ({ navigation, route }: any) => {
   const { user, login, logout, claims } = useAuth();
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  const [pending, setPending] = useState<Review[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const offset = useRef(0);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     offset.current = 0;
+    getPending();
     getRestaurants().then(() => setRefreshing(false));
   }, []);
 
@@ -30,10 +32,22 @@ const HomeScreen = ({navigation, route}: any) => {
     }
   }
 
+  const getPending = async () => {
+    try {
+      const res = await ReviewAPI.pending();
+      if (res.data) {
+        setPending(res.data);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       offset.current = 0;
-      getRestaurants()
+      getRestaurants();
+      getPending();
     });
 
     return unsubscribe;
@@ -63,12 +77,12 @@ const HomeScreen = ({navigation, route}: any) => {
 
   const renderItem = ({ item, index, separators }: any) => (
     <Card
-      onPress={() => navigation.navigate("Restaurant", {restaurant: item})}
+      onPress={() => navigation.navigate("Restaurant", { restaurant: item })}
       style={styles.item}
       status='basic'
       header={headerProps => renderItemHeader(headerProps, item)}
       footer={footerProps => renderItemFooter(footerProps, item)}>
-      <Text numberOfLines={4} style={{fontFamily: "Roboto", minHeight: 50}}>
+      <Text numberOfLines={4} style={{ fontFamily: "Roboto", minHeight: 50 }}>
         {item.description}
       </Text>
     </Card>
@@ -78,13 +92,24 @@ const HomeScreen = ({navigation, route}: any) => {
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        claims?.owner ? <Button onPress={() => navigation.navigate("Create")} title="Add" /> : null
+        claims?.owner &&
+        <Layout style={{ paddingRight: 10, paddingTop: 5 }}>
+          {pending.length != 0 && <Layout style={styles.badge}>
+            <Text style={{textAlign: "center", fontWeight: "bold", fontSize: 10, color: "white"}}>{pending.length}</Text>
+          </Layout>}
+          <Icon
+            onPress={() => navigation.navigate("Pending", {pending})}
+            style={{ width: 40, height: 40 }}
+            fill='#121212'
+            name='alert-circle-outline'
+          />
+        </Layout>
       ),
       headerLeft: () => (
-       <Button onPress={onLogout} title="Logout" />
+        <NativeButton onPress={onLogout} title="Logout" />
       ),
     });
-  }, [navigation, claims]);
+  }, [navigation, claims, pending]);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -92,6 +117,7 @@ const HomeScreen = ({navigation, route}: any) => {
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
         data={restaurants}
+        ListHeaderComponent={claims?.owner ? <Button style={{ borderRadius: 20, marginVertical: 10 }} onPress={() => navigation.navigate("Create")}>Add New Restaurant</Button> : null}
         onEndReached={(info: any) => getRestaurants()}
         onEndReachedThreshold={0.2}
         keyExtractor={(restaurant: Restaurant) => restaurant.id}
@@ -110,6 +136,16 @@ const HomeScreen = ({navigation, route}: any) => {
 const styles = StyleSheet.create({
   screen: {
     flex: 1
+  },
+  badge: { 
+    position: "absolute",
+    justifyContent: "center",
+    zIndex: 10, 
+    backgroundColor: "red", 
+    width: 20, 
+    height: 20, 
+    right: 9, 
+    borderRadius: 10
   },
   text: {
     fontFamily: "Roboto",

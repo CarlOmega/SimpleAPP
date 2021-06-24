@@ -10,6 +10,7 @@ interface Restaurant {
 
 interface Review {
   id: string,
+  restaurantId: string,
   author: string,
   owner: string,
   rating: number,
