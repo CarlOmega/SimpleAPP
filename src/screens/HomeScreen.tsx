@@ -48,7 +48,7 @@ const HomeScreen = ({ navigation, route }: any) => {
     const unsubscribe = navigation.addListener('focus', () => {
       offset.current = 0;
       getRestaurants();
-      getPending();
+      if (claims?.owner) getPending();
     });
 
     return () => {
