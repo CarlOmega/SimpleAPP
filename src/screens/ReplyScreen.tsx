@@ -19,7 +19,7 @@ const ReplyScreen = ({ navigation, route }: any) => {
   const onReply = async (values: any) => {    
     try {
       review.reply = values.reply;
-      await ReviewAPI.update(review.restaurantId, review.id, values.reply);
+      await ReviewAPI.reply(review.restaurantId, review.id!, values.reply);
       navigation.goBack();
     } catch (error) {
       console.log(error.message);

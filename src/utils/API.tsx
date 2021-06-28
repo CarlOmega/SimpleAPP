@@ -87,8 +87,8 @@ export const ReviewAPI = {
   read: (restaurantId: string, offset: number): Promise<AxiosResponse>  => {
     return API.get(REVIEW_ENDPOINT + `/${restaurantId}`, {params: {offset}});
   },
-  update: (restaurantId: string, reviewId: string, reply: string): Promise<AxiosResponse> => {
-    return API.put(REVIEW_ENDPOINT + `/${restaurantId}/${reviewId}`, {reply});
+  reply: (restaurantId: string, reviewId: string, reply: string): Promise<AxiosResponse> => {
+    return API.put(REVIEW_ENDPOINT + `/${restaurantId}/${reviewId}/reply`, {reply});
   },
   delete: (restaurantId: string, reviewId: string): Promise<AxiosResponse> => {
     return API.delete(REVIEW_ENDPOINT + `/${restaurantId}/${reviewId}`);
