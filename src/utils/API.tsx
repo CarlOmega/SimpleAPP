@@ -72,8 +72,8 @@ export const RestaurantAPI = {
   read: (offset: number, rating?: number): Promise<AxiosResponse>  => {
     return API.get(RESTAURANT_ENDPOINT, {params: {offset, rating}});
   },
-  update: (data: any): Promise<AxiosResponse> => {
-    return API.put(RESTAURANT_ENDPOINT, data);
+  update: (restaurantId: string, data: any): Promise<AxiosResponse> => {
+    return API.put(RESTAURANT_ENDPOINT + `/${restaurantId}`, data);
   },
   delete: (restaurantId: string): Promise<AxiosResponse> => {
     return API.delete(RESTAURANT_ENDPOINT + `/${restaurantId}`);

@@ -9,6 +9,7 @@ import ReviewScreen from '@screens/ReviewScreen';
 import ReplyScreen from '@screens/ReplyScreen';
 import PendingScreen from '@screens/PendingScreen';
 import UsersScreen from '@screens/UsersScreen';
+import EditRestaurantScreen from '@screens/EditRestaurantScreen';
 
 const HomeStack = createStackNavigator();
 
@@ -22,6 +23,7 @@ const HomeNavigator = () => {
       <HomeStack.Screen name="Pending" component={PendingScreen} />
       <HomeStack.Screen name="Reply" component={ReplyScreen} />
       <HomeStack.Screen name="Users" component={UsersScreen} />
+      <HomeStack.Screen name="EditRestaurant" component={EditRestaurantScreen} />
     </HomeStack.Navigator>
   );
 };

@@ -6,7 +6,7 @@ import { ReviewAPI } from '@utils/API';
 import dayjs from 'dayjs';
 
 const RestaurantScreen = ({ navigation, route }: any) => {
-  const { claims } = useAuth();
+  const { user, claims } = useAuth();
   const [reviews, setReviews] = useState<Restaurant[]>([]);
   const [preview, setPreview] = useState<any>(null)
   const offset = useRef(0);
@@ -27,12 +27,12 @@ const RestaurantScreen = ({ navigation, route }: any) => {
 
   const getReviews = async () => {
     try {
-      const res = await ReviewAPI.read(restaurant.id, offset.current);
+      const res = await ReviewAPI.read(restaurant.id!, offset.current);
       if (res.data && isMounted.current) {
         setReviews(prev => offset.current === 0 ? res.data : [...prev, ...res.data]);
         offset.current += res.data.length;
       }
-      const {data: preview} = await ReviewAPI.preview(restaurant.id);
+      const {data: preview} = await ReviewAPI.preview(restaurant.id!);
       if (preview && isMounted.current) {
         console.log(preview)
         setPreview(preview);
@@ -95,7 +95,7 @@ const RestaurantScreen = ({ navigation, route }: any) => {
   const renderFooter = (footerProps: any) => (
     <Layout {...footerProps} style={{ flexDirection: "row", justifyContent: "space-between" }}>
       <Text style={[styles.text, { flex: 1, padding: 10 }]} >
-        {restaurant.ratings == 0 ? "Unrated" : `Avg Rating: ${restaurant.avg.toFixed(2)}`}
+        {restaurant.ratings == 0 ? "Unrated" : `Avg Rating: ${restaurant.avg?.toFixed(2)}`}
       </Text>
       {claims?.user &&
         <Button style={{ flex: 1, padding: 10 }} onPress={() => navigation.navigate("Review", { restaurant })}>
@@ -107,6 +107,10 @@ const RestaurantScreen = ({ navigation, route }: any) => {
 
   const renderRestaurant = (props: any) => (
     <Card
+      onPress={() => ((claims?.owner && user.uid === restaurant.owner) || claims?.admin) ? 
+        navigation.navigate("EditRestaurant", { restaurant }) 
+        : null
+      }
       style={styles.restaurantContainer}
       status='basic'
       header={renderHeader}
@@ -147,7 +151,7 @@ const RestaurantScreen = ({ navigation, route }: any) => {
           data={reviews}
           onEndReached={(info: any) => getReviews()}
           onEndReachedThreshold={0.2}
-          keyExtractor={(review: Review) => review.id}
+          keyExtractor={(review: Review) => review.id!}
           renderItem={renderItem}
         />
       </Layout>
