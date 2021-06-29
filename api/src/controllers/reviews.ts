@@ -116,7 +116,7 @@ ReviewController.get("/:restaurantId/preview", authEndpoint, async (req: Request
   }
 });
 
-ReviewController.put("/:restaurantId/:reviewId", authEndpoint, async (req: Request, res: Response) => {
+ReviewController.put("/:restaurantId/:reviewId/reply", authEndpoint, async (req: Request, res: Response) => {
   const restaurantId = req.params.restaurantId;
   const reviewId = req.params.reviewId;
   const user = req.user;
@@ -144,8 +144,73 @@ ReviewController.put("/:restaurantId/:reviewId", authEndpoint, async (req: Reque
 
 });
 
+ReviewController.put("/:restaurantId/:reviewId", authEndpoint, async (req: Request, res: Response) => {
+  const restaurantId = req.params.restaurantId;
+  const reviewId = req.params.reviewId;
+  const user = req.user;
+  const rating = req.body.rating;
+  const comment = req.body.comment;
+  if (!(user.admin || user.user))
+    return res.status(403).send({message: "Cannot perform action"});
+  if (!restaurantId) return res.status(400).send({message: "Need a restaurant ID"});
+  if (!reviewId) return res.status(400).send({message: "Need a review ID"});
+  if (!rating && !comment) return res.status(400).send({message: "Need a something to update"});
+
+  const restaurantRef = db.doc(restaurantId);
+  
+  try {
+    const restaurant =  (await restaurantRef.get()).data();
+    if (!restaurant) throw Error("Issue with restaruant");
+
+    const reviewRef = restaurantRef.collection("reviews").doc(reviewId);
+    const review = (await reviewRef.get()).data();
+    if (!review || !(user.admin || review.author === user.uid)) throw Error("Issue with review");
+    if (rating && Number.isInteger(+rating) && review.rating !== rating) {
+      restaurant.total -= review.rating 
+      restaurant.total += rating;
+      restaurant.avg = restaurant.total / restaurant.ratings;
+      await restaurantRef.update(restaurant);
+      await reviewRef.update({rating: +rating});
+    }
+    if (comment) await reviewRef.update({comment: comment});
+
+    return res.status(201).send({message: "Successful update"});
+  } catch (error) {
+    return res.status(500).send({message: error.message});
+  }
+
+});
+
 ReviewController.delete("/:restaurantId/:reviewId", authEndpoint, async (req: Request, res: Response) => {
-  return res.status(501);
+  const restaurantId = req.params.restaurantId;
+  const reviewId = req.params.reviewId;
+  const user = req.user;
+  if (!(user.admin || user.user))
+    return res.status(403).send({message: "Cannot perform action"});
+  if (!restaurantId) return res.status(400).send({message: "Need a restaurant ID"});
+  if (!reviewId) return res.status(400).send({message: "Need a review ID"});
+
+  const restaurantRef = db.doc(restaurantId);
+  
+  
+  try {
+    const restaurant =  (await restaurantRef.get()).data();
+    if (!restaurant) throw Error("Issue with restaruant");
+
+    const reviewRef = restaurantRef.collection("reviews").doc(reviewId);
+    const review = (await reviewRef.get()).data();
+    if (!review || !(user.admin || review.author === user.uid)) throw Error("Issue with review");
+
+    restaurant.total -= review.rating;
+    restaurant.ratings--;
+    restaurant.avg = restaurant.total / restaurant.ratings;
+    await restaurantRef.update(restaurant);
+    await reviewRef.delete();
+
+    return res.status(201).send({message: "Successful delete"});
+  } catch (error) {
+    return res.status(500).send({message: error.message});
+  }
 });
 
 export default ReviewController;

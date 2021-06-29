@@ -68,6 +68,12 @@ UserController.delete("/:userId", authEndpoint, async (req: Request, res: Respon
   if (!req.params.userId)
     return res.status(400).send();
   try {
+    const restaurantsRef = admin.firestore().collection("restaurants").where("owner", "==", req.params.userId);
+    (await restaurantsRef.get()).docs.forEach(async (restaurant) => {
+      const restaurantRef = restaurant.ref;
+      (await restaurantRef.collection("reviews").get()).docs.forEach(doc => doc.ref.delete());
+      await restaurantRef.delete();
+    })
     await admin.auth().deleteUser(req.params.userId);
     return res.status(200).send({message: "Successful delete"});
   } catch (error) {

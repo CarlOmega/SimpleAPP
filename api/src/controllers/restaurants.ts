@@ -47,6 +47,8 @@ RestaurantController.get("/", authEndpoint, async (req: Request, res: Response) 
   const offset = req.query.offset;
   const rating = req.query.rating;
   let query = db.orderBy("avg", "desc").limit(5);
+  if (!(user.user || user.admin || user.owner))
+    return res.status(403).send({message: "Cannot perform action"});
   if (user.owner)
     query = query.where("owner", "==", user.uid);
   if (offset && Number.isInteger(+offset))
@@ -65,12 +67,47 @@ RestaurantController.get("/", authEndpoint, async (req: Request, res: Response) 
 RestaurantController.put("/:restaurantId", authEndpoint, async (req: Request, res: Response) => {
   // Create edit owned resturants if owner
   // Admin can edit any
-  return res.status(501);
+  const restaurantId = req.params.restaurantId;
+  const user = req.user;
+  const name = req.body.name;
+  const description = req.body.description;
+  if (!(user.admin || user.owner))
+    return res.status(403).send({message: "Cannot perform action"});
+  if (!restaurantId) return res.status(400).send({message: "Need a restaurant ID"});
+  if (!name && !description) return res.status(400).send({message: "Need a something to update"});
+
+  const restaurantRef = db.doc(restaurantId);
+
+  try {
+    const restaurant =  (await restaurantRef.get()).data();
+    if (!restaurant || !(user.admin || restaurant.owner === user.uid)) throw Error("Issue with restaruant");
+    if (name) await restaurantRef.update({name: name});
+    if (description) await restaurantRef.update({description: description});
+    return res.status(201).send({message: "Successful update"});
+  } catch (error) {
+    return res.status(500).send({message: error.message});
+  }
 });
 
 RestaurantController.delete("/:restaurantId", authEndpoint, async (req: Request, res: Response) => {
   // Admin can delete any
-  return res.status(501);
+  const restaurantId = req.params.restaurantId;
+  const user = req.user;
+  if (!(user.admin || user.owner))
+    return res.status(403).send({message: "Cannot perform action"});
+  if (!restaurantId) return res.status(400).send({message: "Need a restaurant ID"});
+
+  const restaurantRef = db.doc(restaurantId);
+
+  try {
+    const restaurant =  (await restaurantRef.get()).data();
+    if (!restaurant || !(user.admin || restaurant.owner === user.uid)) throw Error("Issue with restaruant");
+    (await restaurantRef.collection("reviews").get()).docs.forEach(doc => doc.ref.delete());
+    await restaurantRef.delete();
+    return res.status(201).send({message: "Successful delete"});
+  } catch (error) {
+    return res.status(500).send({message: error.message});
+  }
 });
 
 export default RestaurantController;
