@@ -87,7 +87,7 @@ const EditRestaurantScreen = ({ navigation, route }: any) => {
               value={values.description}
               placeholder={restaurant.description}
             />
-            <Button style={styles.button} size={"giant"} disabled={!isValid && dirty} onPress={handleSubmit} >
+            <Button style={styles.button} size={"giant"} disabled={!isValid || !dirty} onPress={handleSubmit} >
               Save Changes
             </Button>
           </>

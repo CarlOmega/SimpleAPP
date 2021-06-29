@@ -57,11 +57,14 @@ const RestaurantScreen = ({ navigation, route }: any) => {
       <Text style={[styles.text, { flex: 1, padding: 10 }]} >
         {dayjs.unix(item.dateOfVisit).format("DD/MM/YYYY")}
       </Text>
-      {claims?.owner  &&
+      {claims?.owner  ?
         <Button style={{ flex: 1, padding: 10 }} onPress={() => navigation.navigate("Reply", { restaurant, review: item })}>
           {`${item.reply === "" ? "" : "Edit"} Reply`}
         </Button>
-      }
+      : (claims?.admin && item.reply !== "" ? 
+      <Button style={{ flex: 1, padding: 10 }} onPress={() => navigation.navigate("Reply", { restaurant, review: item })}>
+        {`Edit Reply`}
+      </Button> : null)}
     </Layout>
   );
 

@@ -87,7 +87,7 @@ const EditUserScreen = ({ navigation, route }: any) => {
               keyboardType={"email-address"}
               placeholder={user.email}
             />
-            <Button style={styles.button} size={"giant"} disabled={!isValid && dirty} onPress={handleSubmit}>
+            <Button style={styles.button} size={"giant"} disabled={!isValid || !dirty} onPress={handleSubmit}>
               Edit Account
             </Button>
           </>

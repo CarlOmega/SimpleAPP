@@ -54,12 +54,13 @@ const HomeScreen = ({ navigation, route }: any) => {
     const unsubscribe = navigation.addListener('focus', () => {
       offset.current = 0;
       getRestaurants();
+      if (claims?.owner) getPending();
     });
 
     return () => {
       unsubscribe();
     }
-  }, [navigation]);
+  }, [navigation, claims]);
 
   useEffect(() => {
     return () => {

@@ -11,7 +11,7 @@ const signupValidator = yup.object().shape({
   rating: yup
     .number()
     .integer()
-    .min(1)
+    .min(0)
     .max(5),
   comment: yup
     .string()
@@ -91,7 +91,7 @@ const EditReviewScreen = ({ navigation, route }: any) => {
               value={values.comment}
               placeholder={review.comment}
             />
-            <Button style={styles.button} size={"giant"} disabled={!isValid && dirty} onPress={handleSubmit} >
+            <Button style={styles.button} size={"giant"} disabled={!isValid || !dirty} onPress={handleSubmit} >
               Edit Review
             </Button>
           </>
