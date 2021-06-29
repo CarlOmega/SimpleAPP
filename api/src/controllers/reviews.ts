@@ -121,7 +121,7 @@ ReviewController.put("/:restaurantId/:reviewId/reply", authEndpoint, async (req:
   const reviewId = req.params.reviewId;
   const user = req.user;
   const reply = req.body.reply;
-  if (!user.owner)
+  if (!(user.owner || user.admin))
     return res.status(403).send({message: "Cannot perform action"});
   if (!restaurantId) return res.status(400).send({message: "Need a restaurant ID"});
   if (!reviewId) return res.status(400).send({message: "Need a review ID"});
@@ -132,7 +132,7 @@ ReviewController.put("/:restaurantId/:reviewId/reply", authEndpoint, async (req:
   
   try {
     const restaurant =  (await restaurantRef.get()).data();
-    if (!restaurant || restaurant.owner !== user.uid) throw Error("Issue with restaruant");
+    if (!restaurant || !(user.admin || restaurant.owner === user.uid)) throw Error("Issue with restaruant");
 
     const reviewRef = restaurantRef.collection("reviews").doc(reviewId);
     reviewRef.update({reply: reply});
