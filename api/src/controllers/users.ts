@@ -10,6 +10,23 @@ UserController.post("/", authEndpoint, async (req: Request, res: Response) => {
   // Upon account creation only
   const userClaims = req.user;
   const user: User = req.body.user;
+
+  if (userClaims.admin) { 
+    try {
+      const userRecord = await admin.auth().createUser({
+        email: user.email,
+        password: 'Temp1234', // Don't want to send password over 
+        displayName: user.userName,
+      });
+      const claims: any = {};
+      claims[user.accountType] = true;
+      await admin.auth().setCustomUserClaims(userRecord.uid, claims);
+      return res.status(201).send({message: "Success setting up account"});
+    } catch (error) {
+      return res.status(500).send({message: error.message});
+    }
+  } 
+
   if (user.email.toLowerCase() !== userClaims.email)
     return res.status(403).send({message: "Incorrect user"});
   try {
