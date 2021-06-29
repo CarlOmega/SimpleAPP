@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useLayoutEffect } from 'react';
 import { SafeAreaView, StyleSheet, RefreshControl, View, Button as NativeButton } from 'react-native';
 import { useAuth } from '@states/AuthContext';
 import { useEffect } from 'react';
@@ -15,12 +15,12 @@ const HomeScreen = ({ navigation, route }: any) => {
   const offset = useRef(0);
   const isMounted = useRef(true);
 
-  const onRefresh = useCallback(() => {
+  const onRefresh = () => {
     setRefreshing(true);
     offset.current = 0;
     if (claims?.owner) getPending();
     getRestaurants().then(() => setRefreshing(false));
-  }, []);
+  }
 
   const getRestaurants = async () => {
     try {
@@ -39,7 +39,6 @@ const HomeScreen = ({ navigation, route }: any) => {
     try {
       const res = await ReviewAPI.pending();
       if (res.data && isMounted.current) {
-        console.log(res.data)
         setPending([...res.data]);
       }
     } catch (error) {
@@ -48,10 +47,13 @@ const HomeScreen = ({ navigation, route }: any) => {
   }
 
   useEffect(() => {
+    if (claims?.owner) getPending();
+  }, [claims]);
+
+  useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       offset.current = 0;
       getRestaurants();
-      if (claims?.owner) getPending();
     });
 
     return () => {
@@ -100,13 +102,14 @@ const HomeScreen = ({ navigation, route }: any) => {
     </Card>
   );
 
-
   useEffect(() => {
+
+    console.log("pending")
     navigation.setOptions({
       headerRight: () => (
-        claims?.owner ?
+        claims?.owner ? (
         <Layout style={{ paddingRight: 10, paddingTop: 5 }}>
-          {pending.length != 0 && <Layout style={styles.badge}>
+          {pending.length !== 0 && <Layout style={styles.badge}>
             <Text style={{textAlign: "center", fontWeight: "bold", fontSize: 10, color: "white"}}>{pending.length}</Text>
           </Layout>}
           <Icon
@@ -115,7 +118,8 @@ const HomeScreen = ({ navigation, route }: any) => {
             fill='#121212'
             name='alert-circle-outline'
           />
-        </Layout> :
+        </Layout>
+        ) :
         (claims?.admin && 
         <Layout style={{ paddingRight: 10, paddingTop: 5 }}>
           <Icon
