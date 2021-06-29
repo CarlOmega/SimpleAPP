@@ -63,11 +63,18 @@ const UsersScreen = ({ navigation, route }: any) => {
     </Card>
   );
 
+  const renderHeader = () => (
+    <>
+    {claims?.admin ? <Button style={{ borderRadius: 20, marginVertical: 10 }} onPress={() => navigation.navigate("CreateUser")}>Add New User</Button> : null}
+    </>
+  )
+
   return (
     <SafeAreaView style={styles.screen}>
       <Layout style={{ flex: 1, alignItems: "center" }}>
         <List
           style={styles.container}
+          ListHeaderComponent={renderHeader}
           contentContainerStyle={styles.contentContainer}
           data={users}
           keyExtractor={(data: any, index: number) => `${index}`}
