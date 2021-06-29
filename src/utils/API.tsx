@@ -57,11 +57,11 @@ export const UserAPI = {
   read: (): Promise<AxiosResponse>  => {
     return API.get(USER_ENDPOINT);
   },
-  update: (data: any): Promise<AxiosResponse> => {
-    return API.put(USER_ENDPOINT, data);
+  update: (uid: string, data: any): Promise<AxiosResponse> => {
+    return API.put(USER_ENDPOINT + `/${uid}`, data);
   },
   delete: (uid: string): Promise<AxiosResponse> => {
-    return API.delete(USER_ENDPOINT);
+    return API.delete(USER_ENDPOINT + `/${uid}`);
   }
 }
 

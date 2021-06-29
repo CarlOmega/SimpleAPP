@@ -26,6 +26,7 @@ const HomeScreen = ({ navigation, route }: any) => {
     try {
       const res = await RestaurantAPI.read(offset.current);
       if (res.data && isMounted.current) {
+        console.log(res.data);
         setRestaurants(prev => offset.current === 0 ? res.data : [...prev, ...res.data]);
         offset.current += res.data.length;
       }
@@ -53,10 +54,15 @@ const HomeScreen = ({ navigation, route }: any) => {
     });
 
     return () => {
-      isMounted.current = false;
       unsubscribe();
     }
   }, [navigation]);
+
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    }
+  }, []);
 
   const onLogout = async () => {
     try {
@@ -76,7 +82,7 @@ const HomeScreen = ({ navigation, route }: any) => {
 
   const renderItemFooter = (footerProps: any, item: Restaurant) => (
     <Text {...footerProps}>
-      {item.ratings == 0 ? "Unrated" : item.avg.toFixed(2)}
+      {item.ratings == 0 ? "Unrated" : item.avg!.toFixed(2)}
     </Text>
   );
 
@@ -145,11 +151,11 @@ const HomeScreen = ({ navigation, route }: any) => {
       <List
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
-        data={restaurants.filter((restaurant: Restaurant) => restaurant.avg >= ratingFilter)}
+        data={restaurants.filter((restaurant: Restaurant) => (restaurant.avg ?? 0) >= ratingFilter)}
         ListHeaderComponent={renderHeader}
         onEndReached={(info: any) => getRestaurants()}
         onEndReachedThreshold={0.2}
-        keyExtractor={(restaurant: Restaurant) => restaurant.id}
+        keyExtractor={(restaurant: Restaurant) => restaurant.id!}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}

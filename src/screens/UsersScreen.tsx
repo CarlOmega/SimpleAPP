@@ -52,7 +52,7 @@ const UsersScreen = ({ navigation, route }: any) => {
 
   const renderItem = ({ item, index, separators }: any) => (
     <Card
-      onPress={() => console.log(item)}
+      onPress={() => navigation.navigate("EditUser", {user: item})}
       style={styles.item}
       status='basic'
       header={headerProps => renderItemHeader(headerProps, item)}
