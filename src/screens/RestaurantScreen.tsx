@@ -57,17 +57,20 @@ const RestaurantScreen = ({ navigation, route }: any) => {
       <Text style={[styles.text, { flex: 1, padding: 10 }]} >
         {dayjs.unix(item.dateOfVisit).format("DD/MM/YYYY")}
       </Text>
-      {claims?.owner && item.reply === "" &&
+      {claims?.owner  &&
         <Button style={{ flex: 1, padding: 10 }} onPress={() => navigation.navigate("Reply", { restaurant, review: item })}>
-          Reply
+          {`${item.reply === "" ? "" : "Edit"} Reply`}
         </Button>
       }
     </Layout>
   );
 
-  const renderItem = ({ item, index, separators }: any) => (
+  const renderItem = ({ item, index, separators }: { item: Review, index: number, separators: any }) => (
     <Card
-      onPress={() => console.log(item)}
+      onPress={() => ((claims?.user && user.uid === item.author) || claims?.admin) ? 
+        navigation.navigate("EditReview", { restaurant, review: item }) 
+        : null
+      }
       style={styles.item}
       status='basic'
       header={headerProps => renderItemHeader(headerProps, item)}

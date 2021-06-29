@@ -90,6 +90,9 @@ export const ReviewAPI = {
   reply: (restaurantId: string, reviewId: string, reply: string): Promise<AxiosResponse> => {
     return API.put(REVIEW_ENDPOINT + `/${restaurantId}/${reviewId}/reply`, {reply});
   },
+  update: (restaurantId: string, reviewId: string, data: any): Promise<AxiosResponse> => {
+    return API.put(REVIEW_ENDPOINT + `/${restaurantId}/${reviewId}`, data);
+  },
   delete: (restaurantId: string, reviewId: string): Promise<AxiosResponse> => {
     return API.delete(REVIEW_ENDPOINT + `/${restaurantId}/${reviewId}`);
   },

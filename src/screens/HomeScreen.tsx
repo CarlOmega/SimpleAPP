@@ -39,7 +39,8 @@ const HomeScreen = ({ navigation, route }: any) => {
     try {
       const res = await ReviewAPI.pending();
       if (res.data && isMounted.current) {
-        setPending(res.data);
+        console.log(res.data)
+        setPending([...res.data]);
       }
     } catch (error) {
       console.log(error.message);
@@ -100,7 +101,7 @@ const HomeScreen = ({ navigation, route }: any) => {
   );
 
 
-  React.useLayoutEffect(() => {
+  useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         claims?.owner ?
